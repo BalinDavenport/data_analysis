@@ -1,0 +1,98 @@
+---
+title: "Monte Carlo"
+author: "B Davenport"
+date: "27/04/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r MC basic}
+# Error in func1() : could not find function "func1"
+# runs <- 100000
+# func1 <- sum(sample(c(0,1), size = 10, replace = T)) >6
+# mc_prob <- sum(replicate(runs, func1()))/runs
+```
+
+## Full Monte Carlo Sim in R 
+* The winder can make 3000 – 5000 rolls per hour
+* The bagger can make 2000 – 4000 rolls per hour
+* The case packer can make 150 – 250 cases of 30 rolls each per hour
+* The line will product at the slowest of the three
+* Assume all distributions are uniform
+
+```{r MC full}
+results = NULL
+for (k in 1:1000)
+    {
+     rolls = runif(1,3000,5000)
+     bags = runif(1,2000,4000)
+     cases = runif(1,150,200)*30
+     total = min (rolls, bags, cases)
+     results = rbind(results, data.frame(rolls, bags, cases, total))
+    }
+summary(results)
+```
+
+<https://web.stanford.edu/class/bios221/labs/simulation/lab_3_simulation.html>
+This produces a differnt number each time as it is taking the mean of a 
+distribution the lower the first number the greater the differences will be.
+```{r}
+vecpoisson=rpois(1,5)
+mean(vecpoisson)
+```
+A sum of exponentials produces a gamma distribution, using an apply() function
+apply() functions behave similarly to for loops but are much quicker way of itterating
+over an object.
+Here we generate 5 samples from an exponential rate of parameter 0.1 and sum them
+together. sum(rexp(n=nexps, rate=rate)) replicate allows us to do this many times
+with very little code 50000 here to give us an idea of the distribution.
+
+```{r}
+reps <- 50000
+nexps <- 5
+rate <- 0.1
+set.seed(0)
+system.time(
+    x1 <- replicate(reps, sum(rexp(n=nexps, rate=rate)))
+) #replicate
+head(x1)
+```
+To confirm a gamma distribution lets make a histogram or qqplot of the simulation
+
+```{r}
+require(ggplot2)
+ggplot(data.frame(x1), aes(x1)) +
+    geom_histogram(aes(y=..density..)) +
+    stat_function(fun=function(x)dgamma(x, shape = nexps, scale = 1/rate),
+                 color = "red", size = 2)
+```
+```{r}
+set.seed(0)
+system.time(x1 <- lapply(1:reps, function(i){sum(rexp(n=nexps, rate = rate))})) # list apply
+head(x1)
+```
+```{r}
+set.seed(0)
+system.time(x1 <- apply(matrix(rexp(n=nexps*reps, rate=rate), nrow=nexps),2,sum)) # apply on a matrix
+head(x1)
+```
+```{r}
+set.seed(0)
+system.time(x1 <- colSums(matrix(rexp(n=nexps*reps, rate=rate), nrow=nexps))) # using colSums
+```
+```{r}
+require(parallel)
+set.seed(0)
+system.time(x1 <- mclapply(1:reps, function(i){sum(rexp(n=nexps, rate=rate))})) # multi-cluster apply
+
+```
+
