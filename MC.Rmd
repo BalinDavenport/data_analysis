@@ -9,11 +9,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+# What is the Monte Carlo method
+Repeatedly drawing samples from a known probability distribution, before calculating
+the mean of these samples. Giving a good approximation of the final outcome.
 
 ```{r MC basic}
 # Error in func1() : could not find function "func1"
@@ -80,19 +78,79 @@ set.seed(0)
 system.time(x1 <- lapply(1:reps, function(i){sum(rexp(n=nexps, rate = rate))})) # list apply
 head(x1)
 ```
+
 ```{r}
 set.seed(0)
 system.time(x1 <- apply(matrix(rexp(n=nexps*reps, rate=rate), nrow=nexps),2,sum)) # apply on a matrix
 head(x1)
 ```
+
 ```{r}
 set.seed(0)
 system.time(x1 <- colSums(matrix(rexp(n=nexps*reps, rate=rate), nrow=nexps))) # using colSums
 ```
+
 ```{r}
 require(parallel)
 set.seed(0)
 system.time(x1 <- mclapply(1:reps, function(i){sum(rexp(n=nexps, rate=rate))})) # multi-cluster apply
+
+```
+## Predicting final standings of each premier league club.
+<https://medium.com/swlh/predicting-the-outcome-of-the-english-premier-league-by-using-monte-carlo-method-in-r-638fbc90fd37>
+```{r MC Football}
+library(data.table)
+library(stringr)
+library(DT)
+
+pl_fix <- fread("./epl-2020.csv")
+datatable(pl_fix)
+
+# some cleaning
+
+# into new columns
+pl_fix$result_home <- sub("-.*","", pl_fix$Result)
+pl_fix$result_away <- sub(".*-","", pl_fix$Result)
+
+convert_string_to_result <- function(x){
+    
+    x <- str_replace_all(string = x, pattern = " ", repl = "")
+    x <- as.numeric(x)
+    
+    return(x)
+    }
+
+pl_fix$result_home <- convert_string_to_result(pl_fix$result_home)
+pl_fix$result_away <- convert_string_to_result(pl_fix$result_away)
+
+# create a draw d home h and away a indicator
+pl_fix[, hda:= ifelse(result_home == result_away, "d",
+                       ifelse(result_home > result_away, "h", "a"))]
+
+team_names <- unique(c(pl_fix$`Home Team`, pl_fix$`Away Team`))
+team_names
+
+# creating a function that calculates how many points each team has in each
+# round.
+
+calculate_points <- function(pl_fix = pl_fix){
+    
+    # takes a table then calculates points for each round.
+    round_table <- data.table(team = team_names, point = 0, matches_played = 0)
+    
+    for (row in c(1:nrow(pl_fix))){
+        
+        result <- pl_fix[row]$hda
+        result <- as.character(result)
+    }
+}
+
+
+
+
+
+
+
 
 ```
 
