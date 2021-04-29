@@ -47,3 +47,44 @@ msleep %>%
     select(name, order, sleep_total) %>% 
     arrange(order, desc(sleep_total)) %>% 
     filter(sleep_total >= 16)
+
+# mutate() function adds new columns to a data frame
+msleep %>% 
+    mutate(rem_proportion = sleep_rem/sleep_total) %>% 
+    head()
+# mutate() can add several new columns (separated by commas)
+msleep %>% 
+    mutate(rem_poportion = sleep_rem/sleep_total,
+           bodywt_grams = bodywt * 1000) %>% 
+    head
+# 
+# practice
+#
+msleep %>% 
+    mutate(rem_proportion = sleep_rem/sleep_total,
+           bodywt_grams = bodywt * 1000) %>% 
+    select(name, order, rem_proportion, bodywt_grams) %>% 
+    arrange(desc(bodywt_grams)) %>% 
+    head
+# 
+# using summarise() to create summary statistics
+msleep %>% 
+    summarise(avg_sleep = mean(sleep_total))
+# there are many summarise funcitions such as: sd(), min(),max(),sum(),
+# n()(returns the length of a vector)n_distinct()(number of distinct number
+# in a vector)
+msleep %>% 
+    summarise(avg_sleep = mean(sleep_total),
+              min_sleep = min(sleep_total),
+              distinct = n_distinct(sleep_total),
+              total = n())
+
+# group_by verb allows spliting a datafram by some variable, apply a function
+# to those individual frames and then combine them.
+
+msleep %>% 
+    group_by(order) %>% 
+    summarise(avg_sleep = mean(sleep_total),
+              min_sleep = min(sleep_total),
+              max_sleep = max(sleep_total),
+              total = n())
