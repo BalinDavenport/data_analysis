@@ -1,0 +1,61 @@
+---
+title: "ch01"
+author: "B Davenport"
+date: "29/04/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+
+```{r mpg}
+mpg
+?mpg
+
+ggplot(data = mpg)+
+    geom_point(mapping = aes(x = displ, y = hwy))
+```
+```{r}
+ggplot(data = <DATA>) +
+    <GEOM_FUNCTION>(mapping = aes(<MAPPING>))
+
+ggplot(data = mpg)
+# mpg has 234 rows and 11 columns/variables
+# drv stands for drive train
+ggplot(data = mpg)+
+    geom_point(mapping = aes(hwy, cyl))
+ggplot(data = mpg)+
+    geom_point(mapping = aes(class, drv))
+```
+```{r}
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =displ, y =hwy, color = class))
+```
+## Excercises 3.3
+
+```{r}
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =displ, y =hwy, size = class))
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =displ, y =hwy, alpha = class))
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =displ, y =hwy, shape = class))
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =displ, y =hwy), color = 'blue' )
+mpg
+glimpse(mpg)
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =hwy, y = displ), color = "blue")
+```
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r graphing template}
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
