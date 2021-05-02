@@ -1,6 +1,6 @@
 library(dplyr)
 
-msleep <- read.csv("dplyr/msleep_ggplot2.csv")
+msleep <- read.csv("msleep_ggplot2.csv")
 head(msleep)
 # select columns name, and sleep total
 sleep_data <- select(msleep, name, sleep_total)
@@ -88,3 +88,9 @@ msleep %>%
               min_sleep = min(sleep_total),
               max_sleep = max(sleep_total),
               total = n())
+
+msleep %>% 
+    filter(sleep_total < 12)
+
+msleep
+

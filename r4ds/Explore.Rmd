@@ -20,8 +20,8 @@ ggplot(data = mpg)+
     geom_point(mapping = aes(x = displ, y = hwy))
 ```
 ```{r}
-ggplot(data = <DATA>) +
-    <GEOM_FUNCTION>(mapping = aes(<MAPPING>))
+# ggplot(data = <DATA>) +
+#     <GEOM_FUNCTION>(mapping = aes(<MAPPING>))
 
 ggplot(data = mpg)
 # mpg has 234 rows and 11 columns/variables
@@ -38,24 +38,236 @@ ggplot(data = mpg) +
 ## Excercises 3.3
 
 ```{r}
-ggplot(data = mpg) +
-    geom_point(mapping = aes(x =displ, y =hwy, size = class))
-ggplot(data = mpg) +
-    geom_point(mapping = aes(x =displ, y =hwy, alpha = class))
-ggplot(data = mpg) +
-    geom_point(mapping = aes(x =displ, y =hwy, shape = class))
-ggplot(data = mpg) +
-    geom_point(mapping = aes(x =displ, y =hwy), color = 'blue' )
-mpg
+# ggplot(data = mpg) +
+#     geom_point(mapping = aes(x =displ, y =hwy, size = class))
+# ggplot(data = mpg) +
+#     geom_point(mapping = aes(x =displ, y =hwy, alpha = class))
+# ggplot(data = mpg) +
+#     geom_point(mapping = aes(x =displ, y =hwy, shape = class))
+# ggplot(data = mpg) +
+#     geom_point(mapping = aes(x =displ, y =hwy), color = 'blue' )
+# q.2
+?mpg
 glimpse(mpg)
+# q.3
 ggplot(data = mpg) +
-    geom_point(mapping = aes(x =hwy, y = displ), color = "blue")
+    geom_point(mapping = aes(x =hwy, y = displ, color = cyl))
+# a coninuous vairable cannot be mapped to shape.   
+# ggplot(data = mpg) +
+#     geom_point(mapping = aes(x =hwy, y = displ, shape = cyl))
+
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =hwy, y = displ, size = cyl))
+# q.4
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =hwy, y =displ, size = cyl, color = cyl))
+# q.5
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =hwy, y =displ, stroke = cyl))
+# q.6
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =hwy, y =displ, color = displ < 5))
 ```
-## Including Plots
+### 3.5 Facets
+```{r}
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =displ, y =hwy)) +
+    facet_wrap(drv~class, nrow =2)
 
-You can also embed plots, for example:
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =displ, y =hwy)) +
+    facet_wrap(.~class, nrow =2)
+```
+# 1. What happens when you facet a continuous variable
+```{r}
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =drv, y =cyl)) +
+    facet_grid(~displ)
+```
+2. What do the empty cells in plot with facet_grip(drv~cyl) have to do with the
+other plot?
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(drv ~ cyl)
 
-```{r graphing template}
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =drv, y =cyl)) 
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =displ, y =hwy)) +
+    facet_grid(drv~ .)
+
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =displ, y =hwy)) +
+    facet_grid(. ~ cyl)
+```
+facet_wrap allows us to see categories side by side when the number of thes cats
+isn't too high. Usually you want the variable with the most variables in the columns
+as this will make them more readable.
+```{r}
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =displ, y =hwy)) +
+    facet_wrap(~class, nrow = 2)
+```
+```{r}
+ggplot(data = mpg) +
+    geom_smooth(mapping = aes(x =displ, y =hwy, color = drv),
+                show.legend = FALSE
+    )
+```
+
+We can have multiple geoms within the same plot, it's as simple as 
+geom()+
+geom()
+```{r}
+ggplot(data = mpg) +
+    geom_point(mapping = aes(x =displ, y =hwy)) +
+    geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+    geom_point()+
+    geom_smooth()
+```
+produces the same thing. if you place mappings in a geom function ggplot will overwrite
+the global mappings for that layer only.
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+    geom_point(mapping = aes(color = class)) +
+    geom_smooth()
+```
+This can be used to specify different data for each layer here geom_smooth
+is used to display the subcompact cars as a subset of the mpg data
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+    geom_point(mapping = aes(color = class)) +
+    geom_smooth(data = filter(mpg, class == "subcompact"), se = FALSE)
+```
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) +
+    geom_point(show.legend = FALSE)+
+    geom_smooth(se = FALSE, show.legend = FALSE
+    )
+```
+
+
+```{r 3.6}
+ggplot(data = mpg,mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth(se = FALSE)
+
+ggplot(data = mpg,mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth(mapping = aes(group = drv), se = FALSE)
+
+ggplot(data = mpg,mapping = aes(x = displ, y = hwy, color = drv))+
+  geom_point()+
+  geom_smooth(se = FALSE)
+
+ggplot(data = mpg,mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = drv))+
+  geom_smooth(se = FALSE)
+
+ggplot(data = mpg,mapping = aes(x = displ, y = hwy))+
+  geom_point(mapping = aes(color = drv))+
+  geom_smooth(mapping = aes(linetype = drv), se = FALSE)
+
+ggplot(data = mpg,mapping = aes(x = displ, y = hwy, color = drv))+
+  geom_point()
+```
+# 3.7
+Each geom has a stat count associated with it and visa versa, so you can usually just
+use the geom with its associated stat by default, unless you want to edit the sta
+
+```{r bars}
+ggplot(data = diamonds)+
+    geom_bar(mapping = aes(x = cut))
+ggplot(data = diamonds)+
+    stat_count(mapping = aes(x = cut))
+```
+
+change the stat
+
+```{r demo}
+demo <- tribble(
+  ~cut,         ~freq,
+  "Fair",       1610,
+  "Good",       4906,
+  "Very Good",  12082,
+  "Premium",    13791,
+  "Ideal",      21551
+)
+
+ggplot(data = demo) +
+    geom_bar(mapping = aes(x = cut, y = freq), stat = "identity")
+```
+You can overwrite default mapping too
+```{r}
+ggplot(data = diamonds) +
+    geom_bar(mapping = aes(x = cut, y = stat(prop), group = 1))
+```
+3.7 exercises
+1.
+```{r}
+ggplot(data = diamonds)+
+    stat_summary(
+        mapping = aes(x = cut, y = depth),
+        fun.min = min,
+        fun.max = max,
+        fun = median
+    )
+?stat_summary
+# geom_pointrange
+ggplot(data = diamonds) +
+    geom_pointrange(mapping =aes(x = cut, y = depth),
+      stat = "summary",
+      fun.min = min,
+      fun.max = max,
+      fun = median
+    )
+```
+
+2. geom_bar makes heights of the bars proportional to the number of cases, geom_col uses stat_identity() and leaves the data as it is.
+```{r}
+ggplot(data = diamonds)+
+  geom_col(mapping = aes(x = cut, y = depth))
+?geom_col
+```
+
+3. 
+
+Geom     | stat
+abline   | adds reference line
+bar      | uses count
+bin2d    | bin_2d
+blank    | draws nothing used to ensure a common scale between plots
+boxtour  | boxplot
+contour  | contour visulaises a 3d surface in 2d
+count    | count number of obs
+density  | density smoothed histogram
+density2d| same as above with filled contour bands density 2d
+dotplot  | a bar plot with stacked dots or something like that
+errorbar | errorbar identity
+function | draws a function as a curve
+hex      | binhex 
+freqpoly | bin
+jitter   | identity shortcut for geom_point(position = "jitter)
+crossbar | identity representing a vertical interval
+map      | identity pure annotation
+path     | identity connects obs in the order they appear in data
+point    | identity 
+polygon  | identity like path but start and end connected and fill
+quantile | quantile regression drawn with lines continuous boxplot
+ribbon   | identity display interval by ymin + ymax
+rug      | identity supplement  with marginal distribution
+segment  | identity draws a straight line between points
+smooth   | smooth aids the eye in seeing patterns
+spoke    | identity useful for describing direction and distance
+label    | identity adds a text label with a box
+raster   | identity
+violin   | ydensity a mirrored density plot in boxplot format
+
+4. geom smooth computes
