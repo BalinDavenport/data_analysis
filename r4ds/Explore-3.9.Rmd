@@ -271,3 +271,116 @@ raster   | identity
 violin   | ydensity a mirrored density plot in boxplot format
 
 4. geom smooth computes
+* y predicted value
+* ymin lower pointwise CI around the mean
+* ymax upper pointwise CI around the mean
+* se standard error
+
+5. Here we must use count as otherwise the bars are a proportion of themselves = 1 
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, y = after_stat(prop)))
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = color, y = after_stat(prop)))
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, y = ..count.. / sum(..count..),
+                         fill = color))
+```
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, color = cut))
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = cut))
+```
+```{r}
+ggplot(data = diamonds)+
+  geom_bar(mapping = aes(x = cut, fill = clarity))
+```
+
+```{r}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(alpha = .2, position = "identity")
+ggplot(data = diamonds, mapping = aes(x = cut, colour = clarity)) +
+  geom_bar(fill = NA, position = "identity")
+```
+ position fill makes bars the same height this makes it easier to read proportions
+```{r}
+ggplot(data = diamonds,mapping = aes(x = cut, fill = clarity))+
+  geom_bar(position = "fill")
+```
+positon dodge places overlapping objects beside one another
+```{r}
+ggplot(data = diamonds,mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(position = "dodge")
+
+
+```
+Jitter prevents overplotting allowing us to see where the mass of data lies.
+```{r}
+ggplot(data = mpg,mapping = aes(x = displ, y = hwy)) +
+  geom_point(position = "jitter")
+```
+3.8 exercises
+1. what is the problem with this plot how can it be improved?
+```{r}
+ggplot(data = mpg,mapping = aes(x = cty, y = hwy)) +
+  # geom_point()
+  geom_count(color = "blue") +
+  geom_jitter()
+?geom_jitter
+```
+
+```{r}
+ggplot(data = mpg,mapping = aes(x = drv, y = hwy, color = class)) +
+  geom_boxplot()
+?geom_boxplot
+```
+coordinate systems are probably the most complicated part of ggplot2
+default is cartesian
+coor_flip() is useful for a horizontal boxplot or similar. This can be useful when
+we have long labels.
+
+```{r}
+ggplot(data = mpg,mapping = aes(x = class, y = hwy))+
+  geom_boxplot()
+ggplot(data = mpg,mapping = aes(x = class, y = hwy)) +
+  geom_boxplot() +
+  coord_flip()
+```
+coord_quickmap() is flat coord_map() isn't
+```{r}
+
+nz <- map_data("nz")
+ggplot(nz, aes(long, lat, group = group)) +
+  geom_polygon(fill = "white", colour = "black") +
+  coord_quickmap()
+```
+coor_polar() reveals an interesting connection between bar and coxcomb chart.
+making a pie chart using theta 
+```{r}
+bar <- ggplot(data = diamonds) +
+  geom_bar(
+    mapping = aes(x = factor(1), fill = cut),
+    show.legend = FALSE,
+    width = 1) +
+  theme(aspect.ratio = 1) +
+  labs(x = NULL, y = NULL)
+
+bar + coord_flip()
+bar + coord_polar(theta = "y")
+
+?geom_bar
+```
+
+ggplot(data = <DATA>) +
+  <GEOM_FUNCTION>(
+  mapping = aes(<MAPPING>),
+  stat = <STAT>,
+  position = <POSITION>
+  ) +
+  <COORDINATE_FUNCTION> +
+  <FACET_FUNCTION>
+
+The template above takes seven parameters, you rarely have to supply all seven as ggplot will usually supply a useful default.
+These seven parameters compose the grammar of graphics
