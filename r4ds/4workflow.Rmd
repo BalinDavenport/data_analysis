@@ -7,5 +7,60 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(nycflights13)
+flights
+```
+```{r flights}
+(dec25 <- filter(flights, month == 12, day == 25))
+(filter(flights, month == 1))
+(sqrt(2) ^ 2 == 2)
+(near(sqrt(2) ^ 2, 2))
+filter(flights, month == 11 | month == 12)
+nov_dec <- filter(flights, month %in% c(11, 12))
+# These have the same results
+filter(flights, !(arr_delay > 120 | dep_delay > 120))
+filter(flights, arr_delay <= 120, dep_delay <= 120)
+```
+
+Unknown values in a calculation will usually result in a NA even NA == NA, except
+is.na()
+```{r filter}
+filter(flights, arr_delay >= 2,
+       dest %in% c('IAH','HOU'),
+       carrier %in% c('UA','DL','AA'),
+       arr_delay > 2 & dep_delay <= 0)
+filter(flights, dep_delay > 1,
+       arr_delay - dep_delay <= 0.5,
+       dep_time <= 600 | dep_time == 2400)
+filter(flights, between(month, 7,9))
+?between()
+count(flights, is.na(dep_time))
+summary(flights)
+```
+
+```{r arrange}
+arrange(flights, year, month)
+arrange(flights, desc(dep_delay))
+arrange(flights, desc(is.na(dep_time)))
+arrange(flights, dep_delay)
+arrange(flights, air_time)
+arrange(flights, desc(distance))
+```
+```{r select}
+select(flights, year:day)
+select(flights, year, day)
+select(flights, -(year:day))
+select(flights, time_hour, air_time, everything())
+```
+
+```{r select qs 5.4}
+select(flights, dep_time, dep_delay, arr_time, arr_delay)
+select(flights, dep_time:arr_delay, -sched_dep_time, -sched_arr_time)
+select(flights, c(dep_time, dep_delay, arr_time, arr_delay))
+select(flights, dep_time, dep_time)
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+select(flights, vars)
+select(flights, contains("TIME"))
 ```
 
